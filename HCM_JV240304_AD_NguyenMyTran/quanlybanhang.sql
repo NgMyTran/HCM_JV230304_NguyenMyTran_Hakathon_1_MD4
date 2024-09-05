@@ -252,19 +252,3 @@ DELIMITER ;
 
 -- 2. Tạo trigger tr_check_Room_NotAllow khi thực hiện đặt pòng, nếu ngày đến (StartDate)
 -- và ngày đi (EndDate) của đơn hiện tại mà phòng đã có người đặt rồi thì thông báo 'Phòng đã được đặt'
-DELIMITER //
-CREATE TRIGGER tr_check_Room_NotAllow
-BEFORE INSERT ON BookingDetail
-FOR EACH ROW
-BEGIN
-    DECLARE roomBookedCount INT;
-    SELECT COUNT(*)
-    INTO roomBookedCount
-    FROM BookingDetail
-    WHERE RoomId = NEW.RoomId
-    AND (NEW.StartDate < EndDate AND NEW.EndDate > StartDate);
-    IF roomBookedCount > 0 THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Phòng đã được đặt';
-    END IF;
-END //
-DELIMITER ;
